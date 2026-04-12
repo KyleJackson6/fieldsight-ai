@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Farmer {
+  id        String   @id @default(uuid())
+  fullName  String
+  email     String   @unique
+  phone     String?
+  location  String?
+  createdAt DateTime @default(now())
+
+  fields    Field[]
+}
+
+model Field {
+  id        String   @id @default(uuid())
+  fieldName String
+  sizeAcres Float
+  cropType  String
+  location  String?
+  farmerId  String
+  createdAt DateTime @default(now())
+
+  farmer           Farmer           @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  analysisReports  AnalysisReport[]
+  issueDetections  IssueDetection[]
+}
+
+model AnalysisReport {
+  id          String   @id @default(uuid())
+  reportType  String
+  summary     String
+  riskLevel   String
+  generatedAt DateTime @default(now())
+  fieldId     String
+
+  field       Field    @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+}
+
+model IssueDetection {
+  id          String   @id @default(uuid())
+  issueType   String
+  severity    String
+  description String
+  detectedAt  DateTime @default(now())
+  fieldId     String
+
+  field       Field    @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+}
+
+model ContactRequest {
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String
+  message     String
+  submittedAt DateTime @default(now())
+}

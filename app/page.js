@@ -13,9 +13,19 @@ export default function Home() {
           Detect drainage problems, crop stress, and soil irregularities with advanced aerial imagery before they impact your yield.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <button className="rounded-lg bg-emerald-600 px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-colors">
-            Request a Demo
-          </button>
+          <a
+            href="/signup"
+            className="rounded-lg bg-emerald-600 px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors"
+          >
+            Sign Up
+          </a>
+
+          <a
+            href="/report-test"
+            className="rounded-lg border border-emerald-600 px-8 py-3.5 text-base font-semibold text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
+          >
+            Test Report Email
+          </a>
         </div>
       </section>
 
