@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FieldSight AI
+
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2-blue?logo=react)](https://react.dev/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.7-1B222D?logo=prisma)](https://prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
+[![Resend](https://img.shields.io/badge/Resend-Email-black)](https://resend.com/)
+
+FieldSight AI is an advanced, AI-powered agricultural monitoring platform built with Next.js. It helps farmers and agricultural users monitor field conditions, detect drainage problems, identify crop stress, and make smarter, data-driven decisions.
+
+## Features
+
+- **AI-Powered Field Insights:** Automated analysis of crop health and field conditions.
+- **Drainage & Issue Detection:** Intelligent detection of drainage problems and crop stress.
+- **Automated Reporting:** Generates AI-driven field reports and sends automatic notifications when reports are ready.
+- **Email Notifications:** Built-in email integration via [Resend](https://resend.com) for onboarding and report alerts.
+- **Data Management:** Robust schema supporting Farmers, Fields, Analysis Reports, and Issue Detections, utilizing Prisma and BetterSQLite3.
+- **Modern UI:** Built with Tailwind CSS v4 to ensure a sleek and responsive dashboard.
+
+## Tech Stack
+
+- **Framework:** Next.js 16.1 (App Router)
+- **Frontend:** React 19, Tailwind CSS v4
+- **Database / ORM:** BetterSQLite3, Prisma
+- **Email Provider:** Resend
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18+)
+- npm
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/KyleJackson6/fieldsight-ai.git
+cd fieldsight-ai
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the root directory and add the following keys. You must provide a valid Resend API key for the email workflows to function.
+
+```env
+# Resend API Key for Email functionality
+RESEND_API_KEY=your_resend_api_key
+
+# Prisma Database connection URL (for SQLite)
+DATABASE_URL="file:./dev.db"
+```
+
+### 4. Database Setup
+
+Initialize the SQLite database and run Prisma migrations:
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+### 5. Running the Application
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Core Workflows
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **User Onboarding:** Users can navigate to `/signup` to register. Upon submission, they will automatically receive a welcome email with their next steps.
+- **Report Generation:** Users or background jobs trigger field analysis. Test this by navigating to `/report-test` to generate mock reports and trigger an alert email.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+© 2026 FieldSight AI. All rights reserved. Helping farmers make smarter decisions with AI.
