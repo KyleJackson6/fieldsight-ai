@@ -6,23 +6,22 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 [![Resend](https://img.shields.io/badge/Resend-Email-black)](https://resend.com/)
 
-FieldSight AI is an advanced, AI-powered agricultural monitoring platform built with Next.js. It helps farmers and agricultural users monitor field conditions, detect drainage problems, identify crop stress, and make smarter, data-driven decisions.
+FieldSight AI is an advanced, AI-powered agricultural monitoring platform built with Next.js. It helps farmers and agricultural users monitor field conditions, detect drainage problems, identify crop stress, and make smarter, data-driven decisions via modern simulated drone scans.
 
 ## Features
 
-- **AI-Powered Field Insights:** Automated analysis of crop health and field conditions.
-- **Drainage & Issue Detection:** Intelligent detection of drainage problems and crop stress.
-- **Automated Reporting:** Generates AI-driven field reports and sends automatic notifications when reports are ready.
-- **Email Notifications:** Built-in email integration via [Resend](https://resend.com) for onboarding and report alerts.
-- **Data Management:** Robust schema supporting Farmers, Fields, Analysis Reports, and Issue Detections, utilizing Prisma and BetterSQLite3.
-- **Modern UI:** Built with Tailwind CSS v4 to ensure a sleek and responsive dashboard.
+- **Global Authentication System:** A fully simulated Contextual Authentication flow tracking logged-in states globally without requiring immediate backend setups. Automatically protects sensitive views.
+- **Dual-Mode Analysis Hub:** A unified `/analyze` workspace equipped with a smooth UI toggle for handling either *Single Photo* focus checks, or comprehensive *Bulk Dataset* processing.
+- **Dynamic Field Summary Dashboards:** Generates interactive report dashboards natively supplying precise pooling intensity logic, flagged zone mapping, and high-contrast (cool aquatic colored) field heatmaps per unique scan.
+- **Secure Report Archives:** The `/reports` route safely stores past scans locking viewing access strictly to the currently logged in user context. Expand individual records to observe specifically targeted visualizations on dynamic routes.
+- **Automated Email Integration:** Built-in direct linkages with the [Resend](https://resend.com) API allowing users to seamlessly bounce full reports directly to their authenticated emails safely with single click executions!
 
 ## Tech Stack
 
 - **Framework:** Next.js 16.1 (App Router)
 - **Frontend:** React 19, Tailwind CSS v4
 - **Database / ORM:** BetterSQLite3, Prisma
-- **Email Provider:** Resend
+- **Email Provider:** Resend API
 
 ## Getting Started
 
@@ -75,10 +74,12 @@ npm run dev
 
 Navigate to [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## Core Workflows
+## Core Workflows Explorer
 
-- **User Onboarding:** Users can navigate to `/signup` to register. Upon submission, they will automatically receive a welcome email with their next steps.
-- **Report Generation:** Users or background jobs trigger field analysis. Test this by navigating to `/report-test` to generate mock reports and trigger an alert email.
+- **Sign Up / Log In (`/signup`, `/login`):** Users must establish a mock session logic utilizing localized contextual states to generate actual secure reports.
+- **Field Analysis (`/analyze`):** Trigger batch processes securely analyzing dummy images generating deep metrics dashboards mimicking machine learning outputs. 
+- **View Reports (`/reports`):** Automatically protected endpoint logging past activities securely and allowing a dynamically loaded custom-mapped Heatmap Visualization (`/reports/[id]`) highlighting potential water threats clearly utilizing cyan/deep-blue coloring against base earth mapping.
+- **Email Dispatch (`/api/report-ready`):** Hitting the "Send Field Report" button automatically retrieves the user's logged-in identity and triggers an official automated Resend notification seamlessly to your inbox.
 
 ## License
 

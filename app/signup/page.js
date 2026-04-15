@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "" });
   const [message, setMessage] = useState("");
+  const { signup } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Sending...");
+    setMessage("Creating account...");
 
     try {
       const response = await fetch("/api/auth/signup", {
@@ -22,8 +26,9 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Signup successful. Welcome email sent.");
-        setForm({ name: "", email: "" });
+        await signup(form.name, form.email);
+        setMessage("Signup successful. Redirecting to your dashboard...");
+        setTimeout(() => router.push("/analyze"), 1500);
       } else {
         setMessage(data.error || "Something went wrong.");
       }

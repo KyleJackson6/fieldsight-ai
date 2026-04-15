@@ -13,7 +13,7 @@ export function reportReadyEmail(name) {
           <p>You can review updated AI insights related to drainage conditions, crop health, and field performance.</p>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="http://localhost:3000"
+            <a href="http://localhost:3000/reports"
                style="background-color: #2e7d32; color: white; text-decoration: none; padding: 14px 24px; border-radius: 6px; display: inline-block; font-weight: bold;">
               View Report
             </a>
