@@ -10,7 +10,8 @@ FieldSight AI is an advanced, AI-powered agricultural monitoring platform built 
 
 ## Features
 
-- **Global Authentication System:** A fully simulated Contextual Authentication flow tracking logged-in states globally without requiring immediate backend setups. Automatically protects sensitive views.
+- **Global Authentication System:** A real, production-ready JWT and Bcrypt-powered authentication flow attached to an SQLite database via Prisma. Features secure HTTP-only cookie sessions.
+- **Dedicated Application Dashboard:** Public marketing pages (Home, About, Services) are split via Next.js Route Groups from the primary web application (Dashboard). Logged-in users access internal pages securely.
 - **Dual-Mode Analysis Hub:** A unified `/analyze` workspace equipped with a smooth UI toggle for handling either *Single Photo* focus checks, or comprehensive *Bulk Dataset* processing.
 - **Dynamic Field Summary Dashboards:** Generates interactive report dashboards natively supplying precise pooling intensity logic, flagged zone mapping, and high-contrast (cool aquatic colored) field heatmaps per unique scan.
 - **Secure Report Archives:** The `/reports` route safely stores past scans locking viewing access strictly to the currently logged in user context. Expand individual records to observe specifically targeted visualizations on dynamic routes.
@@ -51,18 +52,22 @@ Create a `.env` file in the root directory and add the following keys. You must 
 # Resend API Key for Email functionality
 RESEND_API_KEY=your_resend_api_key
 
+# JWT Token Secret for Authentication signing
+JWT_SECRET=super-secret-local-dev-key
+
 # Prisma Database connection URL (for SQLite)
 DATABASE_URL="file:./dev.db"
 ```
 
 ### 4. Database Setup
 
-Initialize the SQLite database and run Prisma migrations:
+Initialize the SQLite database schema and generate the client bindings:
 
 ```bash
 npx prisma generate
-npx prisma migrate dev
+npx prisma db push
 ```
+*(Note: If you are actively developing the schema, you can use `npx prisma migrate dev` instead)*
 
 ### 5. Running the Application
 
@@ -76,8 +81,9 @@ Navigate to [http://localhost:3000](http://localhost:3000) in your browser to vi
 
 ## Core Workflows Explorer
 
-- **Sign Up / Log In (`/signup`, `/login`):** Users must establish a mock session logic utilizing localized contextual states to generate actual secure reports.
-- **Field Analysis (`/analyze`):** Trigger batch processes securely analyzing dummy images generating deep metrics dashboards mimicking machine learning outputs. 
+- **Sign Up / Log In:** Users must create an official account. Passwords are password-hashed securely via Bcrypt and saved in SQLite.
+- **Field Analysis (`/analyze`):** Trigger batch processes analyzing dummy images generating deep metrics dashboards inside the protected SaaS Dashboard layout.
+- **Account & Billing (`/account`, `/subscriptions`):** Fully mock premium layouts with real capabilities attached (including permanent account deletion with Foreign Key Cascade safety).
 - **View Reports (`/reports`):** Automatically protected endpoint logging past activities securely and allowing a dynamically loaded custom-mapped Heatmap Visualization (`/reports/[id]`) highlighting potential water threats clearly utilizing cyan/deep-blue coloring against base earth mapping.
 - **Email Dispatch (`/api/report-ready`):** Hitting the "Send Field Report" button automatically retrieves the user's logged-in identity and triggers an official automated Resend notification seamlessly to your inbox.
 
