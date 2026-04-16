@@ -3,11 +3,13 @@
 import { useState } from "react";
 import FieldSummaryDashboard from "./FieldSummaryDashboard";
 import { simulateBulkAnalysis } from "../lib/mockAnalysis";
+import { useAuth } from "../hooks/useAuth";
 
 export default function BulkDatasetUploadPanel() {
   const [files, setFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
+  const { user } = useAuth();
   
   const handleFilesChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -22,7 +24,26 @@ export default function BulkDatasetUploadPanel() {
     setIsProcessing(true);
     try {
       const data = await simulateBulkAnalysis(files.length);
-      setDashboardData(data);
+      
+      const generatedId = "REP-" + Math.floor(Math.random() * 8999 + 1000);
+      const storageKey = user ? `fieldSight_scans_${user.email}` : "fieldSight_scans_guest";
+      const activeScans = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      
+      const newScan = {
+        id: generatedId,
+        date: new Date().toLocaleDateString(),
+        status: "Current",
+        affectedArea: data.affectedPercentage,
+        severity: data.riskLevel,
+        images: data.totalProcessed,
+        recommendation: data.recommendation,
+        metrics: data // Storing complete raw payload for expanded views
+      };
+      
+      const updatedScans = [newScan, ...activeScans.map(scan => ({ ...scan, status: "Archived" }))];
+      localStorage.setItem(storageKey, JSON.stringify(updatedScans));
+
+      setDashboardData({ ...data, reportId: generatedId });
     } catch (error) {
       console.error(error);
     } finally {

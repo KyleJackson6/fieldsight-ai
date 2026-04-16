@@ -10,43 +10,57 @@ export function AuthProvider({ children }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
+  // Securely load user context mapped from valid HttpOnly HTTP server calls
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("fieldSight_mockUser");
-      if (stored) {
-        setUser(JSON.parse(stored));
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const { user } = await res.json();
+          setUser(user);
+        }
+      } catch (e) {
+        console.error("Failed to load user session", e);
+      } finally {
+        setIsLoaded(true);
       }
-    } catch (e) {
-      console.error("Failed to load user session", e);
-    }
-    setIsLoaded(true);
+    };
+    checkSession();
   }, []);
 
-  const login = async (email, password = "mockPassword") => {
-    // Mock login simulating a backend setup
-    // Using simple substring for name parsing mock
-    const mockUser = {
-      id: "usr_" + Math.random().toString(36).substring(7),
-      name: email.split("@")[0].replace(/[^a-zA-Z]/g, " ") || "FieldSight User",
-      email: email,
-    };
-    setUser(mockUser);
-    localStorage.setItem("fieldSight_mockUser", JSON.stringify(mockUser));
+  const login = async (email, password) => {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    
+    // Set actual authenticated user memory bridging into cookie-context setup
+    setUser(data.user);
   };
 
-  const signup = async (name, email) => {
-    const mockUser = {
-      id: "usr_" + Math.random().toString(36).substring(7),
-      name,
-      email,
-    };
-    setUser(mockUser);
-    localStorage.setItem("fieldSight_mockUser", JSON.stringify(mockUser));
+  const signup = async (name, email, password) => {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    
+    // Automatically parse cookie memory after DB write to prevent extra login bounce
+    const meRes = await fetch("/api/auth/me");
+    if (meRes.ok) {
+        const meData = await meRes.json();
+        setUser(meData.user);
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
-    localStorage.removeItem("fieldSight_mockUser");
+    await fetch("/api/auth/logout", { method: "POST" });
     router.push("/");
   };
 

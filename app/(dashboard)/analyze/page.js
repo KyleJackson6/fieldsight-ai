@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import AnalysisModeToggle from "../../components/AnalysisModeToggle";
-import SinglePhotoUploadPanel from "../../components/SinglePhotoUploadPanel";
-import BulkDatasetUploadPanel from "../../components/BulkDatasetUploadPanel";
+import AnalysisModeToggle from "@/components/AnalysisModeToggle";
+import SinglePhotoUploadPanel from "@/components/SinglePhotoUploadPanel";
+import BulkDatasetUploadPanel from "@/components/BulkDatasetUploadPanel";
 
 export default function AnalyzePage() {
   const [mode, setMode] = useState("single"); // 'single' | 'bulk'

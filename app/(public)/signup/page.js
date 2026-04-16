@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const [form, setForm] = useState({ name: "", email: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
   const { signup } = useAuth();
   const router = useRouter();
@@ -15,25 +15,11 @@ export default function SignupPage() {
     setMessage("Creating account...");
 
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        await signup(form.name, form.email);
-        setMessage("Signup successful. Redirecting to your dashboard...");
-        setTimeout(() => router.push("/analyze"), 1500);
-      } else {
-        setMessage(data.error || "Something went wrong.");
-      }
+      await signup(form.name, form.email, form.password);
+      setMessage("Signup successful. Redirecting to your dashboard...");
+      setTimeout(() => router.push("/analyze"), 1500);
     } catch (error) {
-      setMessage("Something went wrong.");
+      setMessage(error.message || "Something went wrong.");
     }
   };
 
@@ -64,6 +50,15 @@ export default function SignupPage() {
             className="rounded-lg border border-emerald-900/40 bg-[#111c17] px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-emerald-500"
           />
 
+          <input
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+            className="rounded-lg border border-emerald-900/40 bg-[#111c17] px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-emerald-500"
+          />
+
           <button
             type="submit"
             className="rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-500 transition-colors"
@@ -73,6 +68,10 @@ export default function SignupPage() {
         </form>
 
         {message && <p className="mt-6 text-emerald-400">{message}</p>}
+        
+        <p className="mt-8 text-sm text-gray-500 text-center">
+           Already have an account? <a href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">Log in here</a>
+        </p>
       </div>
     </main>
   );

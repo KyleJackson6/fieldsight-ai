@@ -1,41 +1,23 @@
 "use client";
 
-import { useAuth } from "../../hooks/useAuth";
-import { formatPercent } from "../../lib/mockAnalysis";
-
-const recentReports = [
-  {
-    id: "REP-9921",
-    date: new Date().toLocaleDateString(),
-    status: "Current",
-    affectedArea: 0.12,
-    severity: "High",
-    images: 120,
-    recommendation: "Monitor drainage in the northeastern quadrant. Field visualization mapping updated."
-  },
-  {
-    id: "REP-9804",
-    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-    status: "Archived",
-    affectedArea: 0.08,
-    severity: "Medium",
-    images: 110,
-    recommendation: "Minor pooling expected to resolve naturally over the next 48 hours."
-  },
-  {
-    id: "REP-9712",
-    date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-    status: "Archived",
-    affectedArea: 0.05,
-    severity: "Low",
-    images: 115,
-    recommendation: "Standard conditions across the surveyed zones. No immediate action required."
-  }
-];
+import { useAuth } from "@/hooks/useAuth";
+import { formatPercent } from "@/lib/mockAnalysis";
+import { useState, useEffect } from "react";
 
 export default function ReportsPage() {
   const { user, isLoaded } = useAuth();
+  const [recentReports, setRecentReports] = useState([]);
   
+  useEffect(() => {
+    if (isLoaded) {
+      const storageKey = user ? `fieldSight_scans_${user.email}` : "fieldSight_scans_guest";
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setRecentReports(JSON.parse(saved));
+      }
+    }
+  }, [isLoaded, user]);
+
   if (isLoaded && !user) {
     return (
       <div className="min-h-screen bg-[#0a0f0d] flex items-center justify-center text-white p-6">
@@ -73,7 +55,10 @@ export default function ReportsPage() {
           )}
         </header>
 
-        <h3 className="text-lg font-bold text-emerald-400 mb-4 tracking-wider">LATEST ANALYSIS</h3>
+        {recentReports.filter(r => r.status === 'Current').length > 0 && (
+          <h3 className="text-lg font-bold text-emerald-400 mb-4 tracking-wider">LATEST ANALYSIS</h3>
+        )}
+        
         {recentReports.filter(r => r.status === 'Current').map(report => (
           <div key={report.id} className="rounded-2xl border border-emerald-500/30 bg-[#0d1612] p-8 lg:p-10 shadow-lg shadow-emerald-900/10 mb-10 overflow-hidden relative">
             <div className="absolute top-0 right-0 py-2.5 px-6 bg-emerald-500/10 border-b border-l border-emerald-500/30 rounded-bl-xl text-emerald-400 font-bold text-xs uppercase tracking-widest">
@@ -132,7 +117,7 @@ export default function ReportsPage() {
                 <div className="flex justify-between items-center bg-[#111c17] p-3.5 rounded-lg border border-emerald-900/30 opacity-80 group-hover:opacity-100 transition-opacity">
                    <div className="text-center flex-1">
                       <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-0.5">Severity</p>
-                      <p className={`font-bold ${report.severity === 'Medium' ? 'text-yellow-500' : 'text-emerald-500'}`}>{report.severity}</p>
+                      <p className={`font-bold ${report.severity === 'Medium' || report.severity === 'Elevated' ? 'text-yellow-500' : report.severity === 'High' ? 'text-red-400' : 'text-emerald-500'}`}>{report.severity}</p>
                    </div>
                    <div className="w-px h-8 bg-emerald-900/30 mx-2"></div>
                    <div className="text-center flex-1">
@@ -142,6 +127,10 @@ export default function ReportsPage() {
                 </div>
               </div>
             ))}
+            
+            {recentReports.filter(r => r.status === 'Archived').length === 0 && (
+               <p className="text-gray-500 col-span-2 text-center py-6 border border-dashed border-emerald-900/30 rounded-xl">No historical records available.</p>
+            )}
           </div>
         </div>
       </div>

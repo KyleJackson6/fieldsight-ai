@@ -6,13 +6,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model Farmer {
   id        String   @id @default(uuid())
   fullName  String
   email     String   @unique
+  password  String
   phone     String?
   location  String?
   createdAt DateTime @default(now())

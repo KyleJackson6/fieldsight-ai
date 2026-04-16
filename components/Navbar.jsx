@@ -19,8 +19,6 @@ export default function Navbar() {
 
         <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
           <a href="/" className="text-sm font-semibold text-gray-300 transition-colors hover:text-emerald-400">Home</a>
-          <a href="/analyze" className="text-sm font-semibold text-gray-300 transition-colors hover:text-emerald-400">Analyze</a>
-          <a href="/reports" className="text-sm font-semibold text-gray-300 transition-colors hover:text-emerald-400">Reports</a>
           <a href="/about" className="text-sm font-semibold text-gray-300 transition-colors hover:text-emerald-400">About</a>
           <a href="/services" className="text-sm font-semibold text-gray-300 transition-colors hover:text-emerald-400">Services</a>
         </nav>
@@ -28,12 +26,15 @@ export default function Navbar() {
         <div className="flex flex-1 justify-end items-center gap-6">
           {isLoaded && user ? (
             <>
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="text-sm font-semibold text-emerald-400">{user.name}</span>
-              </div>
+              <a
+                href="/analyze"
+                className="rounded-full bg-emerald-600/10 px-4 py-2 text-sm font-bold text-emerald-500 ring-1 ring-inset ring-emerald-600/20 hover:bg-emerald-600/20 transition-all cursor-pointer"
+              >
+                Dashboard
+              </a>
               <button
                 onClick={logout}
-                className="rounded-full bg-red-600/10 px-4 py-2 text-sm font-bold text-red-500 ring-1 ring-inset ring-red-600/20 hover:bg-red-600/20 transition-all cursor-pointer"
+                className="text-sm font-semibold text-gray-400 transition-colors hover:text-red-400 cursor-pointer"
               >
                 Log Out
               </button>
