@@ -1,3 +1,5 @@
+import HomeHeroCTA from "@/components/HomeHeroCTA";
+
 export default function Home() {
   return (
     <div className="bg-[#0a0f0d] text-gray-100 font-sans">
@@ -12,20 +14,8 @@ export default function Home() {
         <p className="mt-4 text-lg leading-relaxed text-gray-300 max-w-2xl mx-auto">
           Detect drainage problems, crop stress, and soil irregularities with advanced aerial imagery before they impact your yield.
         </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <a
-            href="/signup"
-            className="rounded-lg bg-emerald-600 px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors"
-          >
-            Sign Up
-          </a>
-
-          <a
-            href="/report-test"
-            className="rounded-lg border border-emerald-600 px-8 py-3.5 text-base font-semibold text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
-          >
-            Test Report Email
-          </a>
+        <div className="mt-10 flex items-center justify-center gap-x-6 min-h-[52px]">
+          <HomeHeroCTA />
         </div>
       </section>
 
