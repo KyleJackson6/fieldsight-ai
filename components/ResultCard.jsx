@@ -40,8 +40,8 @@ export default function ResultCard({ result, preview }) {
 
         <div className="relative h-64 md:h-full min-h-[300px] rounded-xl overflow-hidden border border-emerald-900/40 bg-[#070b09]">
           {/* Base Image */}
-          {preview && (
-            <img src={preview} alt="Original" className="absolute inset-0 object-cover w-full h-full opacity-60 grayscale-[30%]" />
+          {(result.annotatedImage || preview) && (
+            <img src={result.annotatedImage || preview} alt="Original" className="absolute inset-0 object-cover w-full h-full opacity-80" />
           )}
           
           {/* Overlay Image (Placeholder) */}

@@ -14,5 +14,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  inference:
+    build: ./inference_service
+    container_name: fieldsight-inference
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./capstone_weights:/weights
+    environment:
+      - MODEL_PATH=${MODEL_WEIGHTS_PATH:-/weights/capstone_weights/best (4).pt}
+
 volumes:
   postgres_data:

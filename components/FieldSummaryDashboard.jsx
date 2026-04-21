@@ -17,10 +17,21 @@ export default function FieldSummaryDashboard({ result }) {
     
     setEmailStatus("loading");
     try {
-      const response = await fetch("/api/report-ready", {
+      const response = await fetch("/api/email-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: user.name, email: user.email }),
+        body: JSON.stringify({ 
+           name: user.name, 
+           email: user.email,
+           report: {
+              id: result.reportId || "Unknown",
+              images: result.totalProcessed,
+              severity: result.riskLevel,
+              affectedArea: result.affectedPercentage,
+              recommendation: result.recommendation,
+              date: result.timestamp
+           }
+        }),
       });
       if (response.ok) {
         setEmailStatus("success");
@@ -74,14 +85,14 @@ export default function FieldSummaryDashboard({ result }) {
               Flagged Sectors 
               <span className="bg-red-500/10 text-red-400 px-3 py-1 text-sm rounded-full border border-red-500/20">{result.flaggedImagesCount} Images</span>
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
               {result.flaggedImages.map(img => (
                 <div key={img.id} className="relative group rounded-xl overflow-hidden border border-emerald-900/40 bg-[#070b09] aspect-square">
-                  <img src="/window.svg" className="absolute inset-0 w-full h-full object-contain opacity-50 p-4" alt={`Flagged ${img.id}`} />
+                  <img src={img.annotatedImage || "/window.svg"} className="absolute inset-0 w-full h-full object-cover" alt={`Flagged ${img.id}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
                   <div className="absolute bottom-3 left-3 z-10">
                     <p className={`text-xs font-bold ${img.severity === 'High' ? 'text-red-400' : 'text-yellow-400'}`}>{img.severity} Severity</p>
-                    <p className="text-[10px] text-gray-400 font-mono tracking-wider mt-0.5">SCORE: {img.conf.toFixed(2)}</p>
+                    <p className="text-[10px] text-gray-400 font-mono tracking-wider mt-0.5">CONF: {img.conf.toFixed(2)}</p>
                   </div>
                 </div>
               ))}

@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import ResultCard from "./ResultCard";
-import { simulateSingleAnalysis } from "../lib/mockAnalysis";
+import { runRealInference, simulateSingleAnalysis } from "../lib/mockAnalysis";
+import { useAuth } from "../hooks/useAuth";
+import { saveReportImages } from "../lib/storage";
 
 export default function SinglePhotoUploadPanel() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState(null);
+  const { user } = useAuth();
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -24,11 +27,59 @@ export default function SinglePhotoUploadPanel() {
     setIsUploading(true);
     setResult(null);
 
+    // Validate size (e.g. max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File is too large. Please upload an image under 10MB.");
+      setIsUploading(false);
+      return;
+    }
+
     try {
-      const mockResult = await simulateSingleAnalysis();
-      setResult(mockResult);
+      const realResult = await runRealInference(file);
+      
+      const generatedId = "REP-" + Math.floor(Math.random() * 8999 + 1000);
+      const storageKey = user ? `fieldSight_scans_${user.email}` : "fieldSight_scans_guest";
+      const activeScans = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      
+      const dataForStorage = {
+        ...realResult,
+        annotatedImage: null // stripping out for local storage
+      };
+
+      const newScan = {
+        id: generatedId,
+        date: new Date().toLocaleDateString(),
+        status: "Current",
+        type: "Single Analysis",
+        affectedArea: realResult.waterDetected ? 1.0 : 0.0,
+        severity: realResult.severity,
+        images: 1,
+        recommendation: realResult.recommendation,
+        metrics: dataForStorage
+      };
+
+      const updatedScans = [newScan, ...activeScans.map(scan => ({ ...scan, status: "Archived" }))];
+      
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updatedScans));
+      } catch (e) {
+        console.warn("Could not save single scan to local storage", e);
+      }
+
+      if (realResult.waterDetected) {
+        saveReportImages(generatedId, [{
+           id: 1,
+           severity: realResult.severity,
+           conf: realResult.confidence,
+           annotatedImage: realResult.annotatedImage,
+           fileName: file.name
+        }]);
+      }
+
+      setResult(realResult);
     } catch (error) {
-      console.error("Analysis failed", error);
+      console.error("Analysis failed:", error);
+      alert("Real inference failed. Error: " + error.message);
     } finally {
       setIsUploading(false);
     }

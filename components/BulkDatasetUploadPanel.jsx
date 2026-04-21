@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import FieldSummaryDashboard from "./FieldSummaryDashboard";
-import { simulateBulkAnalysis } from "../lib/mockAnalysis";
+import { runRealBulkInference, simulateBulkAnalysis } from "../lib/mockAnalysis";
 import { useAuth } from "../hooks/useAuth";
+import { saveReportImages } from "../lib/storage";
 
 export default function BulkDatasetUploadPanel() {
   const [files, setFiles] = useState([]);
@@ -23,25 +24,43 @@ export default function BulkDatasetUploadPanel() {
     if (files.length === 0) return;
     setIsProcessing(true);
     try {
-      const data = await simulateBulkAnalysis(files.length);
+      const data = await runRealBulkInference(files);
       
       const generatedId = "REP-" + Math.floor(Math.random() * 8999 + 1000);
       const storageKey = user ? `fieldSight_scans_${user.email}` : "fieldSight_scans_guest";
       const activeScans = JSON.parse(localStorage.getItem(storageKey) || "[]");
       
+      // Strip large base64 images before putting in local storage to prevent QuotaExceededError
+      const dataForStorage = {
+        ...data,
+        flaggedImages: data.flaggedImages.map(img => {
+          const { annotatedImage, ...rest } = img;
+          return rest;
+        })
+      };
+
       const newScan = {
         id: generatedId,
         date: new Date().toLocaleDateString(),
         status: "Current",
+        type: "Bulk Analysis",
         affectedArea: data.affectedPercentage,
         severity: data.riskLevel,
         images: data.totalProcessed,
         recommendation: data.recommendation,
-        metrics: data // Storing complete raw payload for expanded views
+        metrics: dataForStorage 
       };
       
       const updatedScans = [newScan, ...activeScans.map(scan => ({ ...scan, status: "Archived" }))];
-      localStorage.setItem(storageKey, JSON.stringify(updatedScans));
+      
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updatedScans));
+      } catch (e) {
+        console.warn("Could not save to localStorage, it might be full even after stripping images.", e);
+      }
+
+      // Persist the large generated heavy images to IndexedDB asynchronously
+      saveReportImages(generatedId, data.flaggedImages);
 
       setDashboardData({ ...data, reportId: generatedId });
     } catch (error) {
