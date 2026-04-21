@@ -1,92 +1,98 @@
-# FieldSight AI
+# FieldSight AI 🌾
+**AI-Powered Drone Imagery Analytics for Modern Precision Agriculture**
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.2-blue?logo=react)](https://react.dev/)
-[![Prisma](https://img.shields.io/badge/Prisma-7.7-1B222D?logo=prisma)](https://prisma.io/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
-[![Resend](https://img.shields.io/badge/Resend-Email-black)](https://resend.com/)
+FieldSight AI is an intelligent web application designed to help agronomists and farmers automatically detect and analyze hazardous field conditions such as water pooling and poor drainage. Using high-definition drone imagery and state-of-the-art computer vision models, FieldSight isolates risk sectors, calculates affected areas, and provides intelligent actionable insights.
 
-FieldSight AI is an advanced, AI-powered agricultural monitoring platform built with Next.js. It helps farmers and agricultural users monitor field conditions, detect drainage problems, identify crop stress, and make smarter, data-driven decisions via modern simulated drone scans.
+---
 
-## Features
+## 🛠️ Architecture Overview
 
-- **Global Authentication System:** A real, production-ready JWT and Bcrypt-powered authentication flow attached to an SQLite database via Prisma. Features secure HTTP-only cookie sessions.
-- **Dedicated Application Dashboard:** Public marketing pages (Home, About, Services) are split via Next.js Route Groups from the primary web application (Dashboard). Logged-in users access internal pages securely.
-- **Dual-Mode Analysis Hub:** A unified `/analyze` workspace equipped with a smooth UI toggle for handling either *Single Photo* focus checks, or comprehensive *Bulk Dataset* processing.
-- **Dynamic Field Summary Dashboards:** Generates interactive report dashboards natively supplying precise pooling intensity logic, flagged zone mapping, and high-contrast (cool aquatic colored) field heatmaps per unique scan.
-- **Secure Report Archives:** The `/reports` route safely stores past scans locking viewing access strictly to the currently logged in user context. Expand individual records to observe specifically targeted visualizations on dynamic routes.
-- **Automated Email Integration:** Built-in direct linkages with the [Resend](https://resend.com) API allowing users to seamlessly bounce full reports directly to their authenticated emails safely with single click executions!
+The system is built on a highly-scalable, decoupled architecture separating the fast client UI from the heavy machine-learning workloads.
 
-## Tech Stack
+- **Frontend Application:** Built with **Next.js 16** (App Router) and React 19. Styled entirely via native **Tailwind CSS** for a professional dark-glass theme.
+- **Inference Engine Backend:** Powered by a **FastAPI** Python service seamlessly running a trained **Ultralytics YOLO11** model to process imagery dynamically.
+- **Database & Storage:** **Prisma ORM** locally tethered to **SQLite** for robust authentication. Heavy batched analysis imagery is dynamically cached inside the browser using asynchronous **IndexedDB**.
+- **Transactional Delivery:** Natively integrated with **Resend** to dispatch live, visually structured HTML metrics securely via email.
 
-- **Framework:** Next.js 16.1 (App Router)
-- **Frontend:** React 19, Tailwind CSS v4
-- **Database / ORM:** BetterSQLite3, Prisma
-- **Email Provider:** Resend API
+---
 
-## Getting Started
+## 💻 Prerequisites
 
-### Prerequisites
+Before running the application locally, ensure your machine has the following tools installed:
+- **Node.js:** (v18 or higher) - [Download Node](https://nodejs.org/)
+- **Docker Desktop:** Required for running the Python Inference API. - [Download Docker](https://www.docker.com/products/docker-desktop/)
+- **Git**
 
-- Node.js (v18+)
-- npm
+---
+
+## 🚀 Setup & Installation
+
+Follow these steps to spin up the entire application stack:
 
 ### 1. Clone the Repository
-
 ```bash
-git clone https://github.com/KyleJackson6/fieldsight-ai.git
+git clone https://github.com/your-username/fieldsight-ai.git
 cd fieldsight-ai
 ```
 
-### 2. Install Dependencies
+### 2. Configure Environment Variables
+Create a `.env` file at the root of the project to initialize the database and connect the API keys.
+```env
+DATABASE_URL="file:./dev.db"
+RESEND_API_KEY="re_your_api_key_here"
 
+# Inference Service Configuration
+MODEL_WEIGHTS_PATH="/weights/capstone_weights/best (4).pt"
+NEXT_PUBLIC_INFERENCE_API_URL="http://localhost:8000"
+```
+
+### 3. Install Node Dependencies
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
-
-Create a `.env` file in the root directory and add the following keys. You must provide a valid Resend API key for the email workflows to function.
-
-```env
-# Resend API Key for Email functionality
-RESEND_API_KEY=your_resend_api_key
-
-# JWT Token Secret for Authentication signing
-JWT_SECRET=super-secret-local-dev-key
-
-# Prisma Database connection URL (for SQLite)
-DATABASE_URL="file:./dev.db"
-```
-
-### 4. Database Setup
-
-Initialize the SQLite database schema and generate the client bindings:
-
+### 4. Push Database Schema
 ```bash
 npx prisma generate
 npx prisma db push
 ```
-*(Note: If you are actively developing the schema, you can use `npx prisma migrate dev` instead)*
 
-### 5. Running the Application
+### 5. Start the ML Inference Container
+You must securely boot the Python backend to provide the YOLO model endpoints via Docker:
+```bash
+docker-compose up -d --build
+```
+> **Note:** The `docker-compose.yml` mounts your local `./capstone_weights` directory securely into the container. Ensure your YOLO `.pt` files are located correctly natively on your disk.
 
-Start the development server:
-
+### 6. Start the Next.js Server
 ```bash
 npm run dev
 ```
 
-Navigate to [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+You can now visit http://localhost:3000 to interact with the frontend, log in, and begin securely running automated field scans!
 
-## Core Workflows Explorer
+---
 
-- **Sign Up / Log In:** Users must create an official account. Passwords are password-hashed securely via Bcrypt and saved in SQLite.
-- **Field Analysis (`/analyze`):** Trigger batch processes analyzing dummy images generating deep metrics dashboards inside the protected SaaS Dashboard layout.
-- **Account & Billing (`/account`, `/subscriptions`):** Fully mock premium layouts with real capabilities attached (including permanent account deletion with Foreign Key Cascade safety).
-- **View Reports (`/reports`):** Automatically protected endpoint logging past activities securely and allowing a dynamically loaded custom-mapped Heatmap Visualization (`/reports/[id]`) highlighting potential water threats clearly utilizing cyan/deep-blue coloring against base earth mapping.
-- **Email Dispatch (`/api/report-ready`):** Hitting the "Send Field Report" button automatically retrieves the user's logged-in identity and triggers an official automated Resend notification seamlessly to your inbox.
+## ⚙️ Operating System Specifics
 
-## License
+FieldSight natively supports both Windows and macOS local deployments. Due to Docker environment integrations, keep these paths in mind:
 
-© 2026 FieldSight AI. All rights reserved. Helping farmers make smarter decisions with AI.
+### Windows
+- Ensure **Docker Desktop** is deeply integrated with **WSL 2** (Windows Subsystem for Linux) in the settings.
+- Run all commands inside a robust terminal like PowerShell 7 or Git Bash.
+- Docker natively handles Windows-to-Linux path conversions for mounting your `capstone_weights`.
+
+### macOS (Intel & Apple Silicon M1/M2/M3)
+- Ensure Docker Desktop has "VirtioFS" toggled on under settings for improved I/O speeds when analyzing heavy map image sets cleanly.
+- If the YOLO11 model (`ultralytics>=8.3.0`) fails to run tensor operations correctly on standard ARM arrays, Docker seamlessly emulates x86 parameters behind the scenes.
+
+---
+
+## 📊 Core Usage
+1. **Account Creation:** Sign up or access the application via the local secure Prisma endpoint.
+2. **Uploading Scans:** Toggle between **Single Photo** testing or full **Bulk Dataset** orchestration. Drops your images in the respective zones.
+3. **Execution:** Ensure `docker-compose` is actively running. Click **Run Field Scan** — your photos will securely transmit to the local Docker FastAPI cluster, append bounding boxes, calculate pooling percentages, and return asynchronously to the main viewer!
+4. **Dynamic History:** Navigate to the **My Reports** tab to pull detailed granular data, review securely archived IndexedDB photos via the gallery popup, or permanently push field notifications via **Email Delivery**!
+
+---
+*Created and maintained under the FieldSight project infrastructure.*
